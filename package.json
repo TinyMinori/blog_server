@@ -1,0 +1,23 @@
+{
+  "name": "traveler",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "~1.4.3",
+    "cors": "2.8.5",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "jsonwebtoken": "^8.4.0",
+    "mongoose": "^5.4.11",
+    "morgan": "~1.9.0",
+    "multer": "1.4.1",
+    "nodemon": "1.18.9",
+    "restify": "^7.7.0",
+    "supertest": "^3.4.2"
+  }
+}
