@@ -1,16 +1,25 @@
 const Image = require('../models/Image')
 const User = require('../models/User')
+const { removeFile } = require('../modules/FileService')
 
 exports.findByPage = async (req, res) => {
-	console.log(req.body);
-	await Image.find({}).sort({date: 'desc'}).limit(10).exec()
+	if (!req.query.page || req.query.page <= 0)
+		req.query.page = 0
+	else
+		req.query.page = req.query.page - 1
+	let limit = 10
+	await Image.find({}).sort({date: 'desc'}).exec()
 	.then((images) => {
 		if (!images)
 			return res.status(404).send({
 				message: 'Images not found'
 			})
+		let cursor = limit * req.query.page
+		let result = []
+		for (let index = 0; index < limit && (index + cursor) < images.length; index++)
+			result.push(images[index + cursor])
 		res.status(200).send({
-			data: images
+			data: result
 		})
 	}).catch((err) => {
 		res.status(500).send({
@@ -19,47 +28,93 @@ exports.findByPage = async (req, res) => {
 	})
 }
 
-exports.save = (req, res) => {
-	if (!req.file)
-		return res.status(400).send({
-			message: 'No Image sent'
-		})
-	
+exports.save = async (req, res) => {
+	let filename = (req.file && req.file.filename) ? req.file.filename : ''
 	let image = Image({
-		location_img: req.file.filename,
-		description: req.body.content || '',
-		date: new Date(Date.now()),
+		location_img: filename,
+		content: req.body.content || '',
+		date: Date.now(),
 		comments: []
 	})
-	
-	image.save()
+	await image.save()
 	.then((img) => {
 		if (!img)
 			return res.status(404).send({
 				message: 'Image can\'t be saved'
 			})
-		if 
-	}).catch(() => {
-
+		res.status(200).send({
+			message: 'Image saved'
+		})
+	}).catch((err) => {
+		return res.status(500).send({
+			message: err.message || 'Some error occurred while saving Image'
+		})
 	})
-	console.log(req.file.filename)
-	res.status(200).send("goot")
 }
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
 	if (!req.params.img_id)
 		return res.status(400).send({
 			message: 'No image id specified'
 		})
-	res.status(200).send("goot")
+
+	let data = {}
+	if (req.query.replace == 'needed') {
+		if (req.file && req.file.filename)
+			data.location_img = req.file.filename
+		if (req.body.content)
+			data.content = req.body.content
+		if (req.file && req.file.filename || req.body.content)
+			data.date = Date.now()
+	} else if (req.query.replace == 'all') {
+		if (req.file)
+			data.location_img = req.file.filename
+		else
+			data.location_img = ''
+		data.content = req.body.content || ''
+		data.date = Date.now()
+	}
+
+	await Image.findByIdAndUpdate(req.params.img_id, {$set: data}).exec()
+	.then((image) => {
+		if (!image)
+			return res.status(404).send({
+				message: 'Image not found'
+			})
+		if (image.location_img && req.query.replace == 'all' ||
+			data.location_img && image.location_img)
+			removeFile(image.location_img)
+		res.status(200).send({
+			message: 'Image updated'
+		})
+	}).catch((err) => {
+		return res.status(500).send({
+			message: err.message || 'Some error occurred while updating Image'
+		})
+	})
 }
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
 	if (!req.params.img_id)
 		return res.status(400).send({
 			message: 'No image id specified'
 		})
-	res.status(200).send("goot")
+	await Image.findByIdAndRemove(req.params.img_id)
+	.then((image) => {
+		if (!image)
+			return res.status(404).send({
+				message: 'Image not found'
+			})
+		if (image.location_img != '')
+			removeFile(image.location_img)
+		return res.status(200).send({
+			message: 'Image #' + image._id + ' removed'
+		})
+	}).catch((err) => {
+		return res.status(500).send({
+			message: err.message || 'Some error occurred while removing Image'
+		})
+	})
 }
 
 exports.favorite = async (req, res) => {
@@ -91,7 +146,7 @@ exports.favorite = async (req, res) => {
 		user.favorite = favorites
 		user.save()
 		res.status(200).send({
-			message: 'User updated'
+			message: 'User favorite updated'
 		})
 	}).catch((err) => {
 		return res.status(500).send({

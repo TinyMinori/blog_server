@@ -81,7 +81,7 @@ exports.update = async (req, res) => {
 	})
 }
 
-exports.delete = async(req, res) => {
+exports.delete = async (req, res) => {
 	if (!req.params.cmnt_id)
 		return res.status(400).send({
 			message: 'No comment id specified'

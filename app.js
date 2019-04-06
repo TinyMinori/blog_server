@@ -31,8 +31,8 @@ app.use('/images', express.static(__dirname + '/images'))
  */
 app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*")
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
-	res.header("Access-Control-Allow-Methods", "POST, GET, PUT, PATCH, DELETE")
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Forwarded-For")
+	res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
 	next()
 })
 
@@ -66,12 +66,13 @@ var server = http.createServer(app)
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(3001)
+let port = 3001
+server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)
 
 function onListening() {
-  console.log('[Server] Listening on localhost:3000')
+  console.log('[Server] Listening on localhost:' + port)
 }
 
 /**

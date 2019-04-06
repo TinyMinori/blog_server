@@ -84,13 +84,13 @@ exports.findById = async (req, res) => {
 exports.update = async (req, res) => {
 	let data = {}
 	if (req.body.firstname)
-		data['firstname'] = req.body.firstname
+		data.firstname = req.body.firstname
 	if (req.body.lastname)
-		data['lastname'] = req.body.lastname
+		data.lastname = req.body.lastname
 	if (req.body.password)
-		data['password'] = bcrypt.hashSync(req.body.password, 8)
+		data.password = bcrypt.hashSync(req.body.password, 8)
 	if (req.body.username)
-		data['username'] = req.body.username
+		data.username = req.body.username
 	
 	await User.findByIdAndUpdate(req.user.id, {$set: data})
 	.then(user => {

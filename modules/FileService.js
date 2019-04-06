@@ -1,5 +1,6 @@
 const multer = require('multer')
 const path = require('path')
+const fs = require('fs')
 
 const dest = 'images/'
 
@@ -14,10 +15,16 @@ let storage = multer.diskStorage({
   }
 })
 
-exports.removeFile = (filepath) => {
-  fs.unlink(filepath, function (err) {
-    if (err) throw err;
-    console.log('File deleted!');
+exports.removeFile = (filename) => {
+  fs.stat(dest + filename, function (err) {
+    if (err) {
+      console.log('File doesn\'t exist')
+      return
+    }
+    fs.unlink(dest + filename, function (err) {
+      if (err) throw err;
+      console.log('File deleted!');
+    })
   })
 }
 
