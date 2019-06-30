@@ -1,1 +1,3 @@
 * CHECK RGPD => It's personnal so there's no RGPD but I must write 'Mentions Légales'
+* Add Multer
+* Check working AWS (upload, remove)

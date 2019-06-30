@@ -1,31 +1,21 @@
 const multer = require('multer')
-const path = require('path')
-const fs = require('fs')
+const AWS = require('aws-sdk')
+const uuid = require('uuid/v4')
+AWS.config.update({region: 'eu-west-3'})
 
-const dest = 'images/'
+const s3 = new AWS.S3()
 
-let storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, dest)
-  },
-  filename: function (req, file, cb) {
-    req.body = {}
-    let filename = Date.now() + path.extname(file.originalname)
-    cb(null, filename)
-  }
+var myBucket = 'quebec-travel'
+
+exports.uploadFile = async(Body) => s3.putObject({ Bucket: myBucket, Body, Key: uuid() }).promise()
+
+exports.removeFile = async(Key) => s3.deleteObject({ Bucket: myBucket, Key}).promise()
+
+exports.connect = () => s3.createBucket({Bucket: myBucket}).promise().then(() => {
+  console.log("[FileService] Bucket Created")
+}).catch(err => {
+  if (err.code !== "BucketAlreadyOwnedByYou") console.log(err)
+  else console.log("[File Service] Connected")
 })
 
-exports.removeFile = (filename) => {
-  fs.stat(dest + filename, function (err) {
-    if (err) {
-      console.log('File doesn\'t exist')
-      return
-    }
-    fs.unlink(dest + filename, function (err) {
-      if (err) throw err;
-      console.log('File deleted!');
-    })
-  })
-}
-
-exports.multer = multer({storage: storage})
+exports.multer = require('multer')()

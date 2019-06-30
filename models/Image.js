@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 var ObjectId = mongoose.Schema.Types.ObjectId
 
 var Image = new mongoose.Schema({
-	location_img: {
+	location: {
 		type: String
 	},
 	content: {

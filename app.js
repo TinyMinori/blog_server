@@ -5,6 +5,7 @@ const logger = require('morgan')
 const http = require('http')
 const database = require('./modules/Database')
 const cors = require('cors')
+const aws = require('./modules/FileService')
 
 /**
  * Setup the database
@@ -12,6 +13,12 @@ const cors = require('cors')
 
 const db = new database()
 db.connect()
+
+/**
+ * Setup the FileService
+ */
+
+aws.connect()
 
 /**
  * Setup the router

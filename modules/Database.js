@@ -34,7 +34,7 @@ module.exports = class Database {
 			process.exit(84)
 		})
 		state.on('open', function () {
-			console.log('[Database] Connection Succeeded')
+			console.log('[Database] Connected')
 		})
 	}
 }
