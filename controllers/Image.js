@@ -3,10 +3,8 @@ const User = require('../models/User')
 const { removeFile, uploadFile } = require('../modules/FileService')
 
 exports.findByPage = async (req, res) => {
-	if (!req.query.page || req.query.page <= 0)
+	if (!req.params.page || req.params.page <= 0)
 		req.query.page = 0
-	else
-		req.query.page = req.query.page - 1
 	let limit = 10
 	await Image.find({}).sort({date: 'desc'}).exec()
 	.then((images) => {
@@ -31,11 +29,10 @@ exports.findByPage = async (req, res) => {
 exports.save = async (req, res) => {
 	let file = req.files.image
 	await uploadFile({ Body: file.data, ContentType: file.mimetype })
-	.then(data =>
-		Image({
+	.then(data => new Image({
 			location: data.Location,
-			content: req.body.content || '',
-			comments: []
+			key: data.Key,
+			content: req.body.content || ''
 		}).save()
 	).then(img => {
 		if (!img)
@@ -57,33 +54,35 @@ exports.update = async (req, res) => {
 		return res.status(400).send({
 			message: 'No image id specified'
 		})
-
+	let file = req.files ? req.files.image : undefined
 	let data = {}
-	if (req.query.replace == 'needed') {
-		if (req.file && req.file.filename)
-			data.location = req.file.filename
-		if (req.body.content)
-			data.content = req.body.content
-		if (req.file && req.file.filename || req.body.content)
-			data.date = Date.now()
-	} else if (req.query.replace == 'all') {
-		if (req.file)
-			data.location = req.file.filename
-		else
-			data.location = ''
-		data.content = req.body.content || ''
+	if (req.body.content)
+		data.content = req.body.content
+	if (file || req.body.content)
 		data.date = Date.now()
-	}
 
 	await Image.findByIdAndUpdate(req.params.img_id, {$set: data}).exec()
-	.then((image) => {
+	.then(async (image) => {
 		if (!image)
 			return res.status(404).send({
 				message: 'Image not found'
 			})
-		if (image.location && req.query.replace == 'all' ||
-			data.location && image.location)
-			removeFile(image.location)
+		if (file) {
+			await removeFile(image.key)
+			await uploadFile({ Body: file.data, ContentType: file.mimetype })
+			.then((image) =>
+				Image.findByIdAndUpdate(req.params.img_id, 
+					{ $set: 
+						{
+							location: image.Location,
+							key: image.Key
+						}
+					}).exec()
+			).catch(err => res.status(500).send({
+				message: err.message || 'Some error occurred while updating Image'
+			})
+			)
+		}
 		res.status(200).send({
 			message: 'Image updated'
 		})
@@ -100,13 +99,13 @@ exports.delete = async (req, res) => {
 			message: 'No image id specified'
 		})
 	await Image.findByIdAndRemove(req.params.img_id)
-	.then((image) => {
+	.then(async (image) => {
 		if (!image)
 			return res.status(404).send({
 				message: 'Image not found'
 			})
-		if (image.location != '')
-			removeFile(image.location)
+		if (image.key !== '')
+			await removeFile(image.key)
 		return res.status(200).send({
 			message: 'Image #' + image._id + ' removed'
 		})

@@ -4,8 +4,6 @@ const router = express.Router()
 const Image = require('../controllers/Image')
 const AccessToken = require('../modules/AccessToken')
 
-const { multer } = require('../modules/FileService')
-
 /* [GET] Return a gallery [order by page] */
 router.get('/gallery', Image.findByPage)
 

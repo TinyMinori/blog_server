@@ -14,6 +14,7 @@
     "cors": "2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.0",
+    "express-fileupload": "1.1.5",
     "jsonwebtoken": "^8.4.0",
     "mongoose": "^5.4.11",
     "mongoose-relationship": "0.1.5",

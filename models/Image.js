@@ -8,11 +8,12 @@ var Image = new mongoose.Schema({
 	content: String,
 	date: {
 		type: Date,
-		default: Date.now(),
+		default: Date.now,
 		required: true
 	},
 	comments: {
-		type: [ObjectId]
+		type: [ObjectId],
+		default: []
 	}
 })
 
