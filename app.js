@@ -6,7 +6,6 @@ const http = require('http')
 const database = require('./modules/Database')
 const cors = require('cors')
 const aws = require('./modules/FileService')
-const fileUpload = require('express-fileupload');
 
 /**
  * Setup the database
@@ -27,7 +26,6 @@ aws.connect()
 const app = express()
 
 // default options
-app.use(fileUpload());
 
 app.use(logger('dev'))
 
@@ -35,7 +33,6 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(cors())
-app.use('/images', express.static(__dirname + '/images'))
 
 /**
  * Allowed Methods, Headers and Origins (CORS)
@@ -77,7 +74,7 @@ var server = http.createServer(app)
  * Listen on provided port, on all network interfaces.
  */
 
-let port = 3001
+let port = process.env.NODE_ENV !== "production" ? 3001 : 80
 server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)
