@@ -26,8 +26,8 @@ module.exports = class Database {
 		}
 	}
 
-	connect(){
-		mongoose.connect(uri_format(this), this.options)
+	connect(url){
+		mongoose.connect(process.env.NODE_ENV === "production" ? url : uri_format(this), this.options)
 		var state = mongoose.connection
 		state.on('error', function () {
 			console.error('[Database] Connection Failed')

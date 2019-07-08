@@ -3,14 +3,12 @@ const mongoose = require('mongoose')
 var ObjectId = mongoose.Schema.Types.ObjectId
 
 var Image = new mongoose.Schema({
-	location: {
-		type: String
-	},
-	content: {
-		type: String
-	},
+	location: String,
+	key: String,
+	content: String,
 	date: {
 		type: Date,
+		default: Date.now(),
 		required: true
 	},
 	comments: {

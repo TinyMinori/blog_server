@@ -10,10 +10,10 @@ const { multer } = require('../modules/FileService')
 router.get('/gallery', Image.findByPage)
 
 /* [POST] Post image */
-router.post('/image', AccessToken.verify, multer.single('image'), Image.save)
+router.post('/image', AccessToken.verify, Image.save)
 
 /* [PUT] Edit image with id 'img_id' */
-router.put('/image/:img_id', AccessToken.verify, multer.single('image'), Image.update)
+router.put('/image/:img_id', AccessToken.verify, Image.update)
 
 /* [DELETE] Remove image with id 'img_id' */
 router.delete('/image/:img_id', AccessToken.verify, Image.delete)

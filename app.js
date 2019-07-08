@@ -6,6 +6,7 @@ const http = require('http')
 const database = require('./modules/Database')
 const cors = require('cors')
 const aws = require('./modules/FileService')
+const fileUpload = require('express-fileupload');
 
 /**
  * Setup the database
@@ -24,6 +25,9 @@ aws.connect()
  * Setup the router
  */
 const app = express()
+
+// default options
+app.use(fileUpload());
 
 app.use(logger('dev'))
 
