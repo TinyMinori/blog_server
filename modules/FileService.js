@@ -1,4 +1,3 @@
-const multer = require('multer')
 const AWS = require('aws-sdk')
 const uuid = require('uuid/v4')
 AWS.config.update({region: 'eu-west-3'})
@@ -23,5 +22,3 @@ exports.connect = () => s3.createBucket({Bucket: myBucket}).promise().then(() =>
   if (err.code !== "BucketAlreadyOwnedByYou") console.error(err)
   else console.log("[File Service] Connected")
 })
-
-exports.multer = require('multer')()
