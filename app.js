@@ -74,7 +74,7 @@ var server = http.createServer(app)
  * Listen on provided port, on all network interfaces.
  */
 
-let port = process.env.NODE_ENV !== "production" ? 3001 : 80
+let port = process.env.PORT || 3001
 server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)
