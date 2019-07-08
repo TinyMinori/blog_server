@@ -6,15 +6,16 @@ function uri_format(db_class) {
 		res += db_class.user + ':' + db_class.password + '@'
 		db_class.options.auth = { authdb: "admin"}
 	}
-	res += db_class.url + ':' + db_class.port
+	res += db_class.host + ':' + db_class.port
 	if (db_class.db !== undefined)
 		res += '/' + db_class.db
 	return res	
 }
 
 module.exports = class Database {
-	constructor() {
-		this.url = 'localhost'
+	constructor(url) {
+		this.url = url || undefined
+		this.host = 'localhost'
 		this.port = 27017
 		this.user = undefined
 		this.password = undefined
@@ -26,8 +27,8 @@ module.exports = class Database {
 		}
 	}
 
-	connect(url){
-		mongoose.connect(process.env.NODE_ENV === "production" ? url : uri_format(this), this.options)
+	connect(){
+		mongoose.connect(this.url || uri_format(this), this.options)
 		var state = mongoose.connection
 		state.on('error', function () {
 			console.error('[Database] Connection Failed')

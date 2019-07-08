@@ -11,7 +11,7 @@ const aws = require('./modules/FileService')
  * Setup the database
  */
 
-const db = new database()
+const db = new database(process.env.MONGODB_URI)
 db.connect()
 
 /**
