@@ -27,7 +27,11 @@ exports.findByPage = async (req, res) => {
 }
 
 exports.save = async (req, res) => {
-	let file = req.files.image
+	let file = req.files ? req.files.image : undefined
+	if (file === undefined)
+		return res.status(400).send({
+			message: 'The image is missing'
+		})
 	await uploadFile({ Body: file.data, ContentType: file.mimetype })
 	.then(data => new Image({
 			location: data.Location,
