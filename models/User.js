@@ -12,8 +12,6 @@ var User = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	firstname: String,
-	lastname: String,
 	favorite: {
 		type: [ObjectId]
 	},

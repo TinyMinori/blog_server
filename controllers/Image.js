@@ -3,21 +3,21 @@ const User = require('../models/User')
 const { removeFile, uploadFile } = require('../modules/FileService')
 
 exports.findByPage = async (req, res) => {
-	if (!req.params.page || req.params.page <= 0)
+	if (!req.query.page || req.query.page <= 0)
 		req.query.page = 0
-	let limit = 10
-	await Image.find({}).sort({date: 'desc'}).exec()
-	.then((images) => {
-		if (!images)
+	let options = {
+		limit: 10,
+		sort: { date: 'desc' },
+		page: req.query.page
+	}
+	await Image.paginate({}, options)
+	.then(result => {
+		if (!result)
 			return res.status(404).send({
 				message: 'Images not found'
 			})
-		let cursor = limit * req.query.page
-		let result = []
-		for (let index = 0; index < limit && (index + cursor) < images.length; index++)
-			result.push(images[index + cursor])
 		res.status(200).send({
-			data: result
+			images: result.docs
 		})
 	}).catch((err) => {
 		res.status(500).send({
