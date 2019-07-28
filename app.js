@@ -18,7 +18,6 @@ db.connect()
 /**
  * Setup the FileService
  */
-
 aws.connect()
 
 /**
@@ -33,28 +32,39 @@ app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
-app.use(cors())
 
 /**
  * Allowed Methods, Headers and Origins (CORS)
  */
-app.use(function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*")
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Forwarded-For")
-	res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
-	next()
-})
+/*let allowedOrigins = ['localhost:3000']
+if (process.env.PLATFORM_URL) allowedOrigins.push(process.env.PLATFORM_URL)*/
+
+app.use(cors(/*{
+  origin: function(origin, callback) {
+    if (!origin || whitelist.indexOf(origin) !== -1)
+      callback(null, true)
+    callback('Not allowed by CORS', false)
+  },
+  allowedHeaders: ['Origin', 'Content-Type', 'Authorization'],
+  methods: 'POST,GET,PUT,DELETE',
+}*/))
+
+/*app.use(function (err, req, res, next) {
+  if (err)
+    console.log("error")
+})*/
 
 /**
- *  Setup routes
+ * Setup routes
+ * Comment route is disabled for now [GDPR Law]
  */
 const userRoutes = require('./routes/User')
 const imageRoutes = require('./routes/Image')
-const commentRoutes = require('./routes/Comment')
+//const commentRoutes = require('./routes/Comment')
 
 app.use('/', userRoutes)
 app.use('/', imageRoutes)
-app.use('/', commentRoutes)
+//app.use('/', commentRoutes)
 
 /**
  * Default route if none has been found
@@ -62,7 +72,7 @@ app.use('/', commentRoutes)
 app.use((req, res) => {
 	res.status(404).send({
 		message: "Not Found"
-	})
+  })
 })
 
 /**
@@ -75,7 +85,7 @@ var server = http.createServer(app)
  * Listen on provided port, on all network interfaces.
  */
 
-let port = process.env.PORT || 3001
+let port = process.env.PORT || 3000
 server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)
@@ -89,9 +99,6 @@ function onListening() {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error
-  }
 
   var bind = typeof port === 'string'
     ? 'Pipe ' + port
