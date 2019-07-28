@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 var ObjectId = mongoose.Schema.Types.ObjectId
 
@@ -16,5 +17,7 @@ var Image = new mongoose.Schema({
 		default: []
 	}
 })
+
+Image.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('Image', Image)
