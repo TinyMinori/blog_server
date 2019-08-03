@@ -27,15 +27,18 @@ module.exports = class Database {
 		}
 	}
 
-	connect(){
-		mongoose.connect(this.url || uri_format(this), this.options)
-		var state = mongoose.connection
-		state.on('error', function () {
-			console.error('[Database] Connection Failed')
-			process.exit(84)
-		})
-		state.on('open', function () {
-			console.log('[Database] Connected')
+	async connect() {
+		return new Promise((resolve, reject) => {
+			mongoose.connect(this.url || uri_format(this), this.options)
+			var state = mongoose.connection
+			state.on('error', function () {
+				console.error('[Database] Connection Failed')
+				reject()
+			})
+			state.on('open', function () {
+				console.log('[Database] Connected')
+				resolve()
+			})
 		})
 	}
 }

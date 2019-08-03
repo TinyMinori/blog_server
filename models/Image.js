@@ -1,23 +1,14 @@
 const mongoose = require('mongoose')
-const mongoosePaginate = require('mongoose-paginate-v2');
 
-var ObjectId = mongoose.Schema.Types.ObjectId
-
-var Image = new mongoose.Schema({
-	location: String,
-	key: String,
-	content: String,
-	date: {
-		type: Date,
-		default: Date.now,
-		required: true
+var imageSchema = new mongoose.Schema({
+	key: {
+		type: String,
+		require: true
 	},
-	comments: {
-		type: [ObjectId],
-		default: []
+	location: {
+		type: String,
+		require: true
 	}
 })
 
-Image.plugin(mongoosePaginate)
-
-module.exports = mongoose.model('Image', Image)
+module.exports = mongoose.model('Image', imageSchema)
