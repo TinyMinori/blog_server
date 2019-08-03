@@ -44,9 +44,9 @@ exports.save = async (req, res) => {
 	Promise.all(pImages)
 	.then(imgs => {
 		return new Card({
-			title: req.body.title || '',
-			content: req.body.content || '',
-			images: imgs || []
+			title: req.body.title,
+			content: req.body.content,
+			images: imgs
 		}).save()
 		.then((card) => {
 			if (!card)
@@ -69,18 +69,51 @@ exports.update = async (req, res) => {
 		return res.status(400).send({
 			message: 'No card id specified'
 		})
-	let file = req.files ? req.files.image : undefined
-	let data = {}
-	if (req.body.content)
-		data.content = req.body.content
-	if (file || req.body.content)
-		data.date = Date.now()
 
-	await Card.findByIdAndUpdate(req.params.card_id, {$set: data}).exec()
+	let files = req.files && Object.keys(req.files).length > 0 ? req.files : undefined
+
+	let pImages = []	
+	if (files !== undefined)
+		pImages = Object.keys(files).map((key) => {
+			return uploadFile({ Body: files[key].data, ContentType: files[key].mimetype })
+			.then(img => new Image({
+					key: img.Key,
+					location: img.Location
+				}).save()
+			)
+		})
+	let data = {
+		title: req.body.title,
+		content: req.body.content,
+		images: JSON.parse(req.body.images),
+		date: Date.now()
+	}
+
+	Promise.all(pImages)
+	.then(imgs => {
+		data.images = data.images.concat(imgs)
+		return Card.findByIdAndUpdate(req.params.card_id, {$set: data}).populate("images").exec()
+	})
+	.then((card) => {
+		if (!card)
+			return res.status(404).send({
+				message: 'Card can\'t be updated'
+			})
+		res.status(200).send({
+			message: 'Card updated'
+		})
+	})
+	.catch((err) => {
+		return res.status(500).send({
+			message: err.message || 'Some error occurred while saving Card'
+		})
+	})
+
+/*	await Card.findByIdAndUpdate(req.params.card_id, {$set: data}).exec()
 	.then(async (card) => {
 		if (!card)
 			return res.status(404).send({
-				message: 'Element not found'
+				message: 'Card not found'
 			})
 		if (file) {
 			await removeFile(card.key)
@@ -97,13 +130,13 @@ exports.update = async (req, res) => {
 		}
 	}).then(() => {
 		res.status(200).send({
-			message: 'Element correctly updated'
+			message: 'Card correctly updated'
 		})
 	}).catch((err) => {
 		return res.status(500).send({
-			message: err.message || 'Some error occurred while updating the Element'
+			message: err.message || 'Some error occurred while updating the Card'
 		})
-	})
+	})*/
 }
 
 exports.delete = async (req, res) => {
