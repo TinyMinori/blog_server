@@ -67,7 +67,7 @@ exports.save = async (req, res) => {
 exports.update = async (req, res) => {
 	if (!req.params.card_id)
 		return res.status(400).send({
-			message: 'No element id specified'
+			message: 'No card id specified'
 		})
 	let file = req.files ? req.files.image : undefined
 	let data = {}
@@ -109,22 +109,27 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
 	if (!req.params.card_id)
 		return res.status(400).send({
-			message: 'No element id specified'
+			message: 'No card id specified'
 		})
-	await Card.findByIdAndRemove(req.params.card_id)
-	.then(async (card) => {
+	Card.findByIdAndRemove(req.params.card_id).populate('images').exec()
+	.then(async(card) => {
 		if (!card)
 			return res.status(404).send({
-				message: 'Element not found'
+				message: 'Card not found'
 			})
-		if (card.key !== '')
-			await removeFile(card.key)
+		if (card.images.length !== 0) {
+			let p = card.images.map(img => 
+				Image.findByIdAndRemove({ _id: img._id}).exec()
+				.then(img => removeFile(img.key))
+			)
+			await Promise.all(p)
+		}
 		return res.status(200).send({
-			message: 'Element #' + card._id + ' removed'
+			message: 'Card #' + card._id + ' removed'
 		})
 	}).catch((err) => {
 		return res.status(500).send({
-			message: err.message || 'Some error occurred while removing Element'
+			message: err.message || 'Some error occurred while removing Card'
 		})
 	})
 }
