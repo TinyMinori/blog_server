@@ -133,11 +133,10 @@ exports.delete = async (req, res) => {
 }
 
 exports.goPublisher = async (req, res) => {
-	if (!req.body.secret || req.body.secret !== 'zozo')
-		return res.status(404).send({
-			message: 'Can\'t change your role'
-		})
-	
+	let publishers = 0
+	await User.countDocuments({role: 'publisher'}).then(total => {
+		publishers = total
+	})
 	await User.findById(req.user.id)
 	.then((user) => {
 		if (!user) {
@@ -145,14 +144,44 @@ exports.goPublisher = async (req, res) => {
 				message: 'User not found'
 			})
 		}
-		user.role = (user.role === 'visitor') ? 'publisher' : 'visitor'
-		user.save()
+		if (publishers === 0) {
+			user.role = (user.role === 'visitor') ? 'publisher' : 'visitor'
+			return user.save()
+		} else 
+			return new Error('Can\'t make yourself a publisher')
+	}).then(user => {
 		res.status(200).send({
 			message: (user.username + ' has now a ' + user.role + ' role')
 		})
 	}).catch(err => {
 		res.status(500).send({
-			message: err.message || 'Can\'t change your role'
+			message: err.message || 'Can\'t change the role'
+		})
+	})
+}
+
+exports.makePublisher = async (req, res) => {
+	await User.findById(req.user.id)
+	.then((user) => {
+		if (!user) {
+			return res.status(404).send({
+				message: 'User not found'
+			})
+		}
+		if (user.role === 'publisher') {
+			return User.findById(req.query.id).then((newUser) => {
+				newUser.role = (newUser.role === 'visitor') ? 'publisher' : 'visitor'
+				return newUser.save()
+			})
+		}
+		return new Error('You can\'t change the role of another user')
+	}).then(user => {
+		res.status(200).send({
+			message: (user.username + ' has now a ' + user.role + ' role')
+		})
+	}).catch(err => {
+		res.status(500).send({
+			message: err.message || 'Can\'t change the role'
 		})
 	})
 }

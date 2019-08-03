@@ -4,7 +4,7 @@ AWS.config.update({region: 'eu-west-3'})
 
 const s3 = new AWS.S3()
 
-var myBucket = 'quebec-travel'
+var myBucket = process.env.BUCKET || 'data-i-chose'
 
 exports.uploadFile = ({ Body, ContentType }) => s3.upload({
   Bucket: myBucket,
@@ -20,5 +20,5 @@ exports.connect = () => s3.createBucket({Bucket: myBucket}).promise().then(() =>
   console.log("[FileService] Bucket Created")
 }).catch(err => {
   if (err.code !== "BucketAlreadyOwnedByYou") console.error(err)
-  else console.log("[File Service] Connected")
+  else console.log("[File Service] Connected to " + myBucket)
 })

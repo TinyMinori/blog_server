@@ -12,9 +12,6 @@ var User = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	favorite: {
-		type: [ObjectId]
-	},
 	role: {
 		type: String,
 		enum: ['publisher', 'visitor'],
