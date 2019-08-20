@@ -7,6 +7,9 @@ const AccessToken = require('../modules/AccessToken')
 /* [GET] Return a gallery [order by page] */
 router.get('/gallery', Card.findByPage)
 
+/* [GET] Return a card */
+router.get('/card/:card_id', Card.findById)
+
 /* [POST] Post card */
 router.post('/card', AccessToken.verify, Card.save)
 
