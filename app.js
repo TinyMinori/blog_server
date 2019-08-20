@@ -59,17 +59,17 @@ app.use(cors(/*{
  * Comment route is disabled for now [GDPR Law]
  */
 const userRoutes = require('./routes/User')
-const imageRoutes = require('./routes/Image')
+const cardRoutes = require('./routes/Card')
 //const commentRoutes = require('./routes/Comment')
 
 app.use('/', userRoutes)
-app.use('/', imageRoutes)
+app.use('/', cardRoutes)
 //app.use('/', commentRoutes)
 
 /**
  * Default route if none has been found
  */
-app.use((req, res) => {
+app.all('*', (req, res) => {
 	res.status(404).send({
 		message: "Not Found"
   })

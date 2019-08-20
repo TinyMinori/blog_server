@@ -1,0 +1,15 @@
+{
+    "watch": [
+        "controllers/",
+        "models/",
+        "modules/",
+        "routes",
+        "nodemon.json",
+        "app.js"
+      ],
+    "env": {
+        "NODE_ENV": "development",
+        "BUCKET": "bucket-of-dev",
+        "RULES": "register|login|update|bePublisher|makePublisher"
+    }
+}
