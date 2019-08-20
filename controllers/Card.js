@@ -22,16 +22,32 @@ exports.findByPage = async (req, res) => {
 		res.status(200).send({
 			data: result.docs
 		})
-	}).catch((err) => {
+	}).catch(err => {
 		res.status(500).send({
 			message: err.message || 'Some error occurred while searching Card'
 		})
 	})
 }
 
-/**
- * Add Order obligatory
- */
+exports.findById = async (req, res) => {
+	if (!req.params.card_id)
+		return res.status(404).send({
+			message: 'Card id isn\'t specified'
+		})
+	Card.findById(req.params.card_id)
+	.then(card => {
+		if (!card)
+			return res.status(404).send({
+				message: 'Card not found'
+			})
+		res.status(200).send(card)
+	}).catch(err => {
+		res.status(500).send({
+			message: err.message || 'Some error occurred while searching Card'
+		})
+	})
+}
+
 exports.save = async (req, res) => {
 	/**
 	 * Check data sent by user
