@@ -205,7 +205,7 @@ exports.update = async (req, res) => {
 			Image.findByIdAndRemove(id).exec()
 			.then(item => removeFile(item.key))
 			.then(() => resolve())
-			.catch(() => reject())
+			.catch(() => reject(new Error('Can\'t find or remove file')))
 		})
 	})
 
