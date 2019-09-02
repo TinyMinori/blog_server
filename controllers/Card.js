@@ -35,6 +35,7 @@ exports.findById = async (req, res) => {
 			message: 'Card id isn\'t specified'
 		})
 	Card.findById(req.params.card_id)
+	.populate({ path: 'images', select: { '__v': 0 } })
 	.then(card => {
 		if (!card)
 			return res.status(404).send({
