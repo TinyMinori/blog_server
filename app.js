@@ -14,6 +14,11 @@ const fileUpload = require('express-fileupload')
 
 const db = new database(process.env.MONGODB_URI)
 db.connect()
+.then(() => {
+  console.log('[Database] Connected')
+}).catch(error => {
+  console.error('[Database] ' + error)
+})
 
 /**
  * Setup the FileService

@@ -35,6 +35,7 @@ exports.findById = async (req, res) => {
 			message: 'Card id isn\'t specified'
 		})
 	Card.findById(req.params.card_id)
+	.populate({ path: 'images', select: { '__v': 0 } })
 	.then(card => {
 		if (!card)
 			return res.status(404).send({
@@ -205,7 +206,7 @@ exports.update = async (req, res) => {
 			Image.findByIdAndRemove(id).exec()
 			.then(item => removeFile(item.key))
 			.then(() => resolve())
-			.catch(() => reject())
+			.catch(() => reject(new Error('Can\'t find or remove file')))
 		})
 	})
 

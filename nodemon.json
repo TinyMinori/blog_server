@@ -8,6 +8,7 @@
         "app.js"
       ],
     "env": {
+        "MONGODB_URI": "mongodb://localhost:27017/traveler",
         "NODE_ENV": "development",
         "BUCKET": "bucket-of-dev",
         "RULES": "register|login|update|bePublisher|makePublisher"
