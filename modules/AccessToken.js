@@ -20,6 +20,14 @@ exports.create = (req, res) => {
 	})
 }
 
+exports.isPublisher = (req, res, next) => {
+	if (req.user.role === "publisher")
+		next()
+	res.status(404).send({
+		message: 'You don\'t have the correct role to publish cards'
+	})
+}
+
 exports.verify = (req, res, next) => {
 	let token = req.headers['authorization']
 
@@ -45,7 +53,20 @@ exports.verify = (req, res, next) => {
 				message: 'Failed to authenticate token'
 			})
 		}
-		req.user.id = decoded.id
-		next()
+		User.findById(decoded.id, {__v: 0, password: 0, _id: 0})
+		.then(user => {
+			if (!user) {
+				return res.status(404).send({
+					message: 'User not found'
+				})
+			}
+			req.user = { ...user._doc }
+			req.user.id = decoded.id
+			next()
+		}).catch(err => {
+			res.status(500).send({
+				message: err.message || 'Some error occurred while finding the User'
+			})
+		})
 	})
 }
