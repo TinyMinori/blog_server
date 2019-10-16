@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js"
+    "dev": "nodemon server-local.js",
+    "build": "netlify-lambda build express"
   },
   "devDependencies": {
-    "nodemon": "1.19.1"
+    "netlify-lambda": "1.6.3",
+    "nodemon": "1.19.1",
+    "serverless-http": "2.3.0"
   },
   "dependencies": {
     "aws-sdk": "2.485.0",
