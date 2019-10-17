@@ -1,6 +1,6 @@
 'use strict';
 
-const app = require('./express/app');
+const app = require('./express/server');
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -8,11 +8,6 @@ const app = require('./express/app');
 
 let port = process.env.PORT || 3000
 app.on('error', onError)
-app.on('listening', onListening)
-
-function onListening() {
-  console.log('[Server] Listening on localhost:' + port)
-}
 
 /**
  * Event listener for HTTP server "error" event.
@@ -39,4 +34,6 @@ function onError(error) {
   }
 }
 
-app.listen(port)
+app.listen(port, () => {
+  console.log('[Server] Listening on localhost:' + port)
+})
