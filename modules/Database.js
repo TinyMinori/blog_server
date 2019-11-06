@@ -4,6 +4,7 @@ module.exports = class Database {
 	constructor(uri) {
 		this.uri = process.env.MONGODB_URI || uri
 		this.options = {
+			useUnifiedTopology: true,
 			useNewUrlParser: true,
 			useCreateIndex: true,
 			useFindAndModify: false
