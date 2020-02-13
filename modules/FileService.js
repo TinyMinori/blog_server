@@ -1,10 +1,10 @@
 const AWS = require('aws-sdk')
 const uuid = require('uuid/v4')
-AWS.config.update({region: 'eu-west-3'})
+const myBucket = process.env.BUCKET || 'random-bucket'
+
+AWS.config.update({ params: { Bucket: myBucket },region: 'eu-west-3'})
 
 const s3 = new AWS.S3()
-
-var myBucket = process.env.BUCKET || 'data-i-chose'
 
 exports.uploadFile = ({ Body, ContentType }) => s3.upload({
   Bucket: myBucket,
