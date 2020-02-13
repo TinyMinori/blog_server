@@ -21,33 +21,43 @@ exports.canRegister = (req, res, next) => {
     if (checkRule(ruleList.REGISTER))
         next()
     else
-        res.redirect('/not-found')
+        res.status(403).send({
+            message: "Can't use this resource"
+        })
 }
 
 exports.canLogin = (req, res, next) => {
     if (checkRule(ruleList.LOGIN))
         next()
     else
-        res.redirect('/not-found')
+        res.status(403).send({
+            message: "Can't use this resource"
+        })
 }
 
 exports.canUpdate = (req, res, next) => {
     if (checkRule(ruleList.UPDATE))
         next()
     else
-        res.redirect('/not-found')
+        res.status(403).send({
+            message: "Can't use this resource"
+        })
 }
 
 exports.canBePublisher = (req, res, next) => {
     if (checkRule(ruleList.BEPUBLISHER))
         next()
     else
-        res.redirect('/not-found')
+        res.status(403).send({
+            message: "Can't use this resource"
+        })
 }
 
 exports.canMakePublisher = (req, res, next) => {
     if (checkRule(ruleList.MAKEPUBLISHER))
         next()
     else
-        res.redirect('/not-found')
+        res.status(403).send({
+            message: "Can't use this resource"
+        })
 }
